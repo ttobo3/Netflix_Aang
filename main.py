@@ -41,7 +41,7 @@ def create_merge_data(): # key 값 매칭 확인 용 함수
     logger.logging.info("두 데이터를 병합한 파일이 저장되었습니다.")
 
 def add_running_time_mins_coloum():
-    df = pd.read_csv('data_CSV/justwatch_data.csv', encoding='utf-8-sig') 
+    df = pd.read_csv('data_CSV/justwatch_data.csv', na_values=[], keep_default_na=False, encoding='utf-8-sig') 
 
     # 'length' 열에 time_to_minutes 함수 적용하여 새로운 열 'length_in_minutes' 추가
     df['length_in_minutes'] = df['length'].apply(jw.convert_length_in_mins)
