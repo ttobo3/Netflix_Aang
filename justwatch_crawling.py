@@ -192,6 +192,34 @@ def get_detail_infos(driver):
 
     return koGenres, enGenres, runtime, age_rating, ctry, dirc
 
+def convert_length_in_mins(length):
+    # 값이 NaN 또는 float일 경우 None을 반환
+    if not isinstance(length, str) or length == 'N/A':
+        return None  # NaN 또는 숫자형이 있을 경우 None 처리
+    
+    # 시간과 분을 추출하는 정규식 패턴
+    time_pattern = re.compile(r'(?:(\d+)\s*시간\s*)?(\d+)\s*분')
+    
+    # 입력 문자열에서 시간과 분을 추출
+    match = time_pattern.match(length.strip())
+    
+    if match:
+        # 시간과 분을 추출
+        hours = match.group(1)  # 시간 부분
+        minutes = match.group(2)  # 분 부분
+        
+        # 시간 부분이 None이면 0시간으로 처리
+        hours = int(hours) if hours else 0
+        minutes = int(minutes)
+        
+        # 총 분으로 계산 (시간 * 60 + 분)
+        total_minutes = hours * 60 + minutes
+        return total_minutes
+    
+    else:
+        # 유효하지 않은 형식의 경우 None을 반환
+        return None
+
 def get_imbd_rates(driver):
     score, votes = 'N/A', 'N/A'
     try:
@@ -272,6 +300,8 @@ def crawl_justWatch(driver, read_limit, limit_num, request_wait):
 
             # 3-6. 세부 정보
             genres_KO, genres_EN, length, rating, country, director = get_detail_infos(driver)
+            # 재생 시간 min 값으로 변경
+
 
             # 7. IMDb 스코어
             imdb_score, imdb_votes = get_imbd_rates(driver)
