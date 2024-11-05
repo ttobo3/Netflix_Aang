@@ -47,20 +47,38 @@ def add_running_time_mins_coloum():
     df['length_in_minutes'] = df['length'].apply(jw.convert_length_in_mins)
 
     # 결과를 새로운 Excel 파일로 저장
-    df.to_csv('data_CSV/justwatch_data_edited.csv', index=False, encoding='utf-8-sig')
+    df.to_csv('data_CSV/justwatch_data_length_edited.csv', index=False, encoding='utf-8-sig')
 
     logger.logging.info("length 열을 분으로 치환한 데이터가 저장되었습니다.")
+
+def expand_data_by_genre():
+    df = pd.read_csv('data_CSV/justwatch_data_edited.csv', na_values=[], keep_default_na=False, encoding='utf-8-sig') 
+
+    # 'genres' 열을 , 기준으로 분리하여 행으로 확장
+    df['genres'] = df['genres'].str.split(',')
+    df_expanded = df.explode('genres')
+
+    # 공백 제거
+    df_expanded['genres'] = df_expanded['genres'].str.strip()
+
+    # 결과를 새로운 Excel 파일로 저장
+    df_expanded.to_csv('data_CSV/justwatch_data_length_genre_parsed_edited.csv', index=False, encoding='utf-8-sig')
+
+    logger.logging.info("genre 기준 parsing된 데이터가 저장 되었습니다.")
 
 def choose_crawl_option():
     # 사용자 입력 받기
     print("어떤 작업을 수행하시겠습니까?")
     print("1: Kaggle 데이터 가져오기")
     print("2: JustWatch 데이터 가져오기")
-    print("3: 두 가지 모두 수행하기")
-    print("4: 두 개의 데이터 병합 확인하기")
-    print("5: 러닝 타임 분(minutes) 값으로 치환한 열 추가하기")
+    print("3: 두 가지 데이터 모두 가져오기")
+    print("4: JustWatch 데이터 수정하기")
+    print("5: 두 개의 데이터 병합 확인하기")
+    print("6: 러닝 타임 분(minutes) 값으로 치환한 열 추가하기")
+    print("7: 장르 별로 데이터 분리하기")
+
     
-    choice = int(input("번호를 입력하세요 (1/2/3/4/5): ").strip())
+    choice = int(input("번호를 입력하세요 (1/2/3/4/5/6/7): ").strip())
 
     if choice == 1:
         get_kaggle_data()
@@ -73,10 +91,17 @@ def choose_crawl_option():
         get_justwatch_data()
 
     elif choice == 4:
+        add_running_time_mins_coloum()
+        expand_data_by_genre()
+
+    elif choice == 5:
         create_merge_data()
     
-    elif choice == 5:
+    elif choice == 6:
         add_running_time_mins_coloum()
+
+    elif choice == 7:
+        expand_data_by_genre()
 
     else:
         logger.logging.error("잘못된 입력입니다. 올바른 숫자를 입력해주세요.")
