@@ -40,6 +40,17 @@ def create_merge_data(): # key 값 매칭 확인 용 함수
 
     logger.logging.info("두 데이터를 병합한 파일이 저장되었습니다.")
 
+def add_running_time_mins_coloum():
+    df = pd.read_csv('data_CSV/justwatch_data.csv', encoding='utf-8-sig') 
+
+    # 'length' 열에 time_to_minutes 함수 적용하여 새로운 열 'length_in_minutes' 추가
+    df['length_in_minutes'] = df['length'].apply(jw.convert_length_in_mins)
+
+    # 결과를 새로운 Excel 파일로 저장
+    df.to_csv('data_CSV/justwatch_data_edited.csv', index=False, encoding='utf-8-sig')
+
+    logger.logging.info("length 열을 분으로 치환한 데이터가 저장되었습니다.")
+
 def choose_crawl_option():
     # 사용자 입력 받기
     print("어떤 작업을 수행하시겠습니까?")
@@ -47,8 +58,9 @@ def choose_crawl_option():
     print("2: JustWatch 데이터 가져오기")
     print("3: 두 가지 모두 수행하기")
     print("4: 두 개의 데이터 병합 확인하기")
+    print("5: 러닝 타임 분(minutes) 값으로 치환한 열 추가하기")
     
-    choice = int(input("번호를 입력하세요 (1/2/3/4): ").strip())
+    choice = int(input("번호를 입력하세요 (1/2/3/4/5): ").strip())
 
     if choice == 1:
         get_kaggle_data()
@@ -62,6 +74,10 @@ def choose_crawl_option():
 
     elif choice == 4:
         create_merge_data()
+    
+    elif choice == 5:
+        add_running_time_mins_coloum()
+
     else:
         logger.logging.error("잘못된 입력입니다. 올바른 숫자를 입력해주세요.")
 
